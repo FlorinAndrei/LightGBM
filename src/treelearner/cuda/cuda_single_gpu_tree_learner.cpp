@@ -255,6 +255,9 @@ Tree* CUDASingleGPUTreeLearner::Train(const score_t* gradients,
       parent_num_bits_bin,
       smaller_num_bits_bin,
       larger_num_bits_bin);
+    // the histograms are constructed on the stream of the histogram constructor, while the best split finder
+    // reads them on its own streams, so wait for the histograms to be complete before finding the best splits
+    SynchronizeCUDADevice(__FILE__, __LINE__);
 
     SelectFeatureByNode(tree.get());
 
